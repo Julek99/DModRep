@@ -116,7 +116,7 @@ while True:
         A = inpt("A = ")
         if A == "":
             print("\nThank you for using the Beilinson-Bernstein localisation calculator. " + \
-                  "Have a nice day!")
+                  "Have a nice day!\n")
             break
     print("\nOn how many powers of the basis would you like to compute the action of A?" + \
           "\nTo quit, type \"#\". \n")

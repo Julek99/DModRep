@@ -92,13 +92,13 @@ class representation:
                     out += ",\"{" + str(cfs[n][m]) + "}\"]"
                 
                 else:
-                    out += " \\arrow[" + "loop above,"
-                    out += ",\"{" + str(cfs[n][m]) + "}\"]"
+                    out += " \\arrow[ loop above,"
+                    out += "\"{" + str(cfs[n][m]) + "}\"]"
                         
             if n != mx:
                 out += " & \n"
 
         out +="\n\\end{tikzcd}\\]"
-
+        out = out.replace("**","^")
         return out.replace("*","")
     
