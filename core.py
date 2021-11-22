@@ -4,7 +4,7 @@ class representation:
     def __init__(self, nb, crd, bases, chart = 0):
         self.cfs = {}
         self.crd = crd
-        self.twist = symbols("λ")-1
+        self.twist = symbols("\lambda")-1
         self.chart = chart
         self.bases = bases
         self.nb = nb
@@ -56,3 +56,49 @@ class representation:
                       + ' = '+ str(self.custom(txt,b**i))
                 print(out.replace('**','^'))
         print()
+        
+    def calc_letter(self, txt, mx):
+        CFS = {}
+        for n in range(mx+1):
+            pol = poly(self.custom(txt,self.bases[0]**n),self.crd)
+            cfs = {}
+            for m in range(mx+1):
+                cf = pol.coeff_monomial(self.crd**m)
+                if cf != 0:
+                    cfs[m] = cf
+                CFS[n] = cfs
+        return CFS
+    
+    def draw(self, letter, mx):
+        out = "\\[ \\begin{tikzcd}\n"
+        cfs = self.calc_letter(letter, mx)
+        for n in range(mx+1):
+            if n == 0:
+                out += " 1 "
+            else:
+                out += "(" + str(self.bases[0]) + ")^{" + str(n) + "} "
+                     
+            for m in cfs[n].keys():
+                d = n-m
+                
+                if d > 0:
+                    out += " \\arrow[" + "l"*abs(d) + ","
+                    out += "bend right = " + str(abs(30*(abs(d)-1)))
+                    out += ",\"{" + str(cfs[n][m]) + "}\"]"
+                    
+                elif d < 0:
+                    out += " \\arrow["+ "r"*abs(d) + ","
+                    out += "bend right = " + str(abs(30*(abs(d)-1)))
+                    out += ",\"{" + str(cfs[n][m]) + "}\"]"
+                
+                else:
+                    out += " \\arrow[" + "loop above,"
+                    out += ",\"{" + str(cfs[n][m]) + "}\"]"
+                        
+            if n != mx:
+                out += " & \n"
+
+        out +="\n\\end{tikzcd}\\]"
+
+        return out.replace("*","")
+    
