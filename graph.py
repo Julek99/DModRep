@@ -106,7 +106,7 @@ first = True
 while True:
     if first:
         print("Representation computed.\n\nTo graph the action of an element A of sl_2 on the" + \
-              " global sections of this module, please type A in terms of the basis {E,F,H} of sl_2." + \
+              " local sections of this module, please type A in terms of the basis {E,F,H} of sl_2." + \
               "\nTo quit, type \"#\". \n")
         A = inpt("A = ")
         first = False
