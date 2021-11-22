@@ -1,60 +1,58 @@
 from sympy import *
-import os
-z,a,b,l = symbols('z \\alpha \\beta \lambda')
-w = 1/z
 
 class representation:
-    def __init__(self, chart = 0, twist = 0, bases = [z,1/z,1/(z-1)], mx = 5):
+    def __init__(self, nb, crd, bases, chart = 0):
         self.cfs = {}
+        self.crd = crd
+        self.twist = symbols("λ")-1
         self.chart = chart
-        self.twist = twist
-        self.mx = mx
         self.bases = bases
+        self.nb = nb
 
     def nabla(self, x):
-        if self.chart == 0:
-            return diff(x,z) - a*x/z - b*x/(z-1)
-        else:
-            return diff(x,w)
+       # print(diff(x,self.crd))
+        #print(self.nb*x)
+        return diff(x,self.crd) - self.nb*x
 
     def H(self, x):
         if self.chart == 0:
-            return apart(2*z*self.nabla(x) - self.twist, z)
+            return apart(2*self.crd*self.nabla(x) - self.twist*x, self.crd)
         elif self.chart == 1:
-            return apart(-2*w*self.nabla(x) + self.twist, w)
+            return apart(-2*self.crd*self.nabla(x) + self.twist*x, self.crd)
         else:
             raise Exception("No such chart.")
 
     def F(self,x):
         if self.chart == 1:
-            return apart(w**2*self.nabla(x) - w*self.twist, w)
+            return apart(self.crd**2*self.nabla(x) - self.crd*self.twist*x, self.crd)
         elif self.chart == 0:
-            return apart(-self.nabla(x), z)
+            return apart(-self.nabla(x), self.crd)
         else:
             raise Exception("No such chart.")
 
     def E(self,x):
         if self.chart == 0:
-            return apart(z**2*self.nabla(x) - z*self.twist, z)
+            return apart(self.crd**2*self.nabla(x) - self.crd*self.twist*x, self.crd)
         elif self.chart == 1:
-            return apart(-self.nabla(x), w)
-        else:
-            raise Exception("No such chart.")
-        
-    def X(self,x):
-        if self.chart == 0:
-            return apart(0.5*self.H(x)+self.F(x), z)
-        elif self.chart == 1:
-            return apart((1/2)**self.H(x)+self.F(x), w)
+            return apart(-self.nabla(x), self.crd)
         else:
             raise Exception("No such chart.")
 
-    def compute(self,fn, pt=False):
-        print("The sl2-element " + fn.__name__ + " acts on this connection as: ")
+    def custom(self, txt, x):
+        txt = txt.replace("H", "self.H(x)")
+        txt = txt.replace("E", "self.E(x)")
+        txt = txt.replace("F", "self.F(x)")
+        ans = eval(txt)
+        return collect(ans, self.crd)
+
+    def compute(self,txt,mx):
+        print("The sl_2-element A = " + txt + " acts on this connection as: ")
         print()
+        out = 'A * 1 = '+ str(self.custom(txt,1))
+        print(out.replace('**','^'))
         for b in self.bases:
-            for i in range(self.mx):
-                out = fn.__name__ + ' * (' + str(b) + ')^' + str(i) \
-                      + ' = '+ str(fn(b**i))
+            for i in range(1,mx+1):
+                out = 'A * (' + str(b) + ')^' + str(i) \
+                      + ' = '+ str(self.custom(txt,b**i))
                 print(out.replace('**','^'))
         print()
